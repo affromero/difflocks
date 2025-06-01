@@ -1,0 +1,30 @@
+[project]
+name = "difflocks"
+version = "0.1.0"
+description = "DiffLocks: Generating 3D Hair from a Single Image using Diffusion Models"
+authors = ["Radu Alexandru Rosu", "Keyu Wu", "Yao Feng", "Youyi Zheng", "Michael J. Black"]
+readme = "README.md"
+requires-python = ">=3.10.16"
+dependencies = [
+    "dctorch>=0.1.2",
+    "einops>=0.8.1",
+    "flash-attn",
+    "jsonmerge>=1.9.2",
+    "libigl>=2.6.1",
+    "mediapipe>=0.10.21",
+    "natten",
+    "opencv-python-headless>=4.11.0.86",
+    "safetensors>=0.5.3",
+    "torch",
+    "torchdiffeq>=0.2.5",
+    "torchsde>=0.2.6",
+    "torchvision",
+    "tqdm>=4.67.1",
+    "trimesh>=4.6.10",
+]
+
+[tool.uv.sources]
+natten = { url = "https://shi-labs.com/natten/wheels/cu121/torch2.4.0/natten-0.17.4%2Btorch240cu121-cp310-cp310-linux_x86_64.whl" }
+torch = { url = "https://download.pytorch.org/whl/cu121/torch-2.4.1%2Bcu121-cp310-cp310-linux_x86_64.whl" }
+torchvision = { url = "https://download.pytorch.org/whl/cu121/torchvision-0.19.1%2Bcu121-cp310-cp310-linux_x86_64.whl" }
+flash-attn = { url = "https://github.com/Dao-AILab/flash-attention/releases/download/v2.7.4.post1/flash_attn-2.7.4.post1+cu12torch2.4cxx11abiFALSE-cp310-cp310-linux_x86_64.whl" }
