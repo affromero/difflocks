@@ -52,7 +52,7 @@ class Mediapipe():
 
         base_options = python.BaseOptions(
             model_asset_path=os.path.join(SCRIPT_DIR,'./assets/face_landmarker.task'),
-            delegate=mp.tasks.BaseOptions.Delegate.GPU
+            delegate=mp.tasks.BaseOptions.Delegate.CPU
             )
         options = vision.FaceLandmarkerOptions(
                                         running_mode=mode,
