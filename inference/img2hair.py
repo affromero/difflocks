@@ -144,11 +144,18 @@ def crop_face(image, face_landmarks, output_size, crop_size_multiplier=2.8):
     left_cheek = face_landmarks_px[234]  # Left cheek
     right_cheek = face_landmarks_px[454]  # Right cheek
 
-    # Calculate face bounding box dimensions
-    face_width = right_cheek[0] - left_cheek[0]
-    face_height = chin[1] - forehead[1]
+    xy_range = [left_cheek[0], right_cheek[0], forehead[1], chin[1]]  # xmin, xmax, ymin, ymax
+    # [494, 875, 336, 816]
+    return crop_face_from_size(image, xy_range, output_size)
 
+def crop_face_from_size(image, xy_range, output_size=770, crop_size_multiplier=2.8):
+    img_h, img_w, _ = image.shape
     # Calculate new face height while maintaining aspect ratio
+
+
+    # Calculate face bounding box dimensions
+    face_width = abs(xy_range[1] - xy_range[0])
+    face_height = abs(xy_range[3] - xy_range[2])
     crop_size = max(face_width, face_height)  # Ensure square crop around the face
 
     #make the crop slightly bigger
@@ -156,9 +163,9 @@ def crop_face(image, face_landmarks, output_size, crop_size_multiplier=2.8):
     crop_size=int(crop_size*crop_size_multiplier)
 
     # Calculate crop center
-    face_center_x = (left_cheek[0] + right_cheek[0]) // 2
+    face_center_x = (xy_range[0] + xy_range[1]) // 2
     # face_center_y = (forehead[1] + chin[1]) // 2
-    face_center_y = int(forehead[1]*0.4 + chin[1]*0.6)  #not the middle of the face but more closer to the chin than the forehead
+    face_center_y = int(xy_range[2]*0.4 + xy_range[3]*0.6)  #not the middle of the face but more closer to the chin than the forehead
 
 
     # Crop boundaries in the original image
@@ -198,7 +205,6 @@ def crop_face(image, face_landmarks, output_size, crop_size_multiplier=2.8):
     padded_image = cv2.resize(padded_image, (output_size, output_size))
 
     return padded_image
-
 
 
 class DiffLocksInference():
