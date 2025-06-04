@@ -281,7 +281,7 @@ class DiffLocksInference():
         face_landmarks_px, face_landmarks = self.mediapipe_img.run(frame)
         if face_landmarks is None: 
             #there was no face detected, there is nothing to do
-            return None
+            return None, None
         frame=crop_face(frame, face_landmarks, output_size=770)
 
         #back to tensor
@@ -385,7 +385,6 @@ class DiffLocksInference():
 
         rgb_img = torch.tensor(frame).cuda()
         rgb_img=rgb_img.permute(2,0,1).unsqueeze(0).float()/255.0
-
 
         strand_points_world, hair_material_dict = self.rgb2hair(rgb_img, out_path) 
 
