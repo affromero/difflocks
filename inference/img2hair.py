@@ -265,7 +265,7 @@ class DiffLocksInference():
         self.normalization_dict=DiffLocksDataset.get_normalization_data()
         self.scalp_trimesh, self.scalp_mesh_data=DiffLocksDataset.compute_scalp_data(os.path.join(DEFAULT_BODY_DATA_DIR,"scalp.ply"))
 
-    def rgb2hair(self, rgb_img, out_path=None):
+    def rgb2hair(self, rgb_img, out_path=None, is_face_cropped=False, face_landmarks=None):
         assert rgb_img.shape[1] == 3, "rgb_img needs to have 3 channels"
         assert len(rgb_img.shape) == 4, "rgb_img needs to be in format BCHW, so it needs 4 dimensions"
 
@@ -278,10 +278,19 @@ class DiffLocksInference():
         frame=(rgb_img.permute(0,2,3,1).squeeze(0)*255.0).to(torch.uint8) 
         frame=frame.detach().cpu().numpy()
         print("frame",frame.shape)
-        face_landmarks_px, face_landmarks = self.mediapipe_img.run(frame)
-        if face_landmarks is None: 
-            #there was no face detected, there is nothing to do
-            return None, None
+
+        #if the image is not cropped to the face, we need to crop it to the face
+        if not is_face_cropped:
+            #if the face landmarks are not provided, we need to run mediapipe to detect the face
+            if face_landmarks is None:
+                face_landmarks_px, face_landmarks = self.mediapipe_img.run(frame)
+                #if there was no face detected, there is nothing to do
+                if face_landmarks is None: 
+                    return None, None
+        else:
+            #if the image is already cropped to the face, we don't need to do anything
+            face_landmarks = None
+
         frame=crop_face(frame, face_landmarks, output_size=770)
 
         #back to tensor
@@ -378,7 +387,7 @@ class DiffLocksInference():
 
 
 
-    def file2hair(self, file_path, out_path):
+    def file2hair(self, file_path, out_path, is_face_cropped=False, face_landmarks=None):
         frame=cv2.imread(file_path)
 
         frame = cv2.cvtColor(frame,cv2.COLOR_BGR2RGB)
@@ -386,7 +395,7 @@ class DiffLocksInference():
         rgb_img = torch.tensor(frame).cuda()
         rgb_img=rgb_img.permute(2,0,1).unsqueeze(0).float()/255.0
 
-        strand_points_world, hair_material_dict = self.rgb2hair(rgb_img, out_path) 
+        strand_points_world, hair_material_dict = self.rgb2hair(rgb_img, out_path, is_face_cropped=is_face_cropped, face_landmarks=face_landmarks) 
 
         return strand_points_world, hair_material_dict
 
